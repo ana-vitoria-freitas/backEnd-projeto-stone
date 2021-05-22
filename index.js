@@ -4,15 +4,11 @@ const app = express()
 const port = 3000
 
 const proConfig = require('./src/Infra/config');
+const Pool = require("pg").Pool;
+const pool = new Pool(proConfig);
 
 app.get('/', async(req, res) => {
   try {
-    const Pool = require("pg").Pool;
-
-
-    const pool = new Pool(proConfig);
-
-    module.exports = pool;
     const response = await pool.query('SELECT * FROM users')
     await pool.end()
 
