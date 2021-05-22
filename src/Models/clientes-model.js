@@ -1,17 +1,25 @@
 class ClientesModel {
-    constructor(nome, email, senha, telefone,logradouro, numero_rua, complemento, bairro, cidade, estado, cep, status) {
+
+    constructor(nome, email, senha, telefone, cep, numero_rua,complemento) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.telefone = telefone;
-        this.logradouro = logradouro;
+        this.cep = cep;
         this.numero_rua = numero_rua;
         this.complemento = complemento;
-        this.bairro =bairro;
+    }
+    setLogradouro(logradouro){
+        this.logradouro = logradouro;
+    }
+    setBairro(bairro){
+        this.bairro = bairro;
+    }
+    setCidade(cidade){
         this.cidade = cidade;
-        this.estado = estado;
-        this.cep = cep;
-        this.status = status;
+    }
+    setSiglaEstado(siglaEstado){
+        this.siglaEstado = siglaEstado;
     }
 }
 
