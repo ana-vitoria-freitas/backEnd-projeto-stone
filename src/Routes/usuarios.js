@@ -13,7 +13,7 @@ async function rotaUsuarios(fastify, options) {
         }
     });
 
-    fastify.post('/usuarios/novoUsuario', async (request, reply) =>{
+    fastify.post('/usuarios/insereUsuario', async (request, reply) =>{
         const usuario = new UsuarioModel(request.body.nome, request.body.email, request.body.senha, request.body.telefone);
         usuario.hashPassword();
         try {
@@ -42,10 +42,9 @@ async function rotaUsuarios(fastify, options) {
         }
     })
 
-    fastify.patch('/usuarios/atualizarTelefone/:name', async (request, reply) =>{
+    fastify.patch('/usuarios/atualizaTelefone/:id', async (request, reply) =>{
         try{
-            console.log(request.params);
-            const response = await pool.query(`SELECT * FROM users where UPPER(name_usuario) like UPPER('%${request.params.name}%')`);
+            const response = await pool.query(`SELECT * FROM users where id=${request.params.id}`);
             if(response.rows.length){
                 await pool.query(`UPDATE usuarios SET telefone=${request.body.telefone} where id=${response.rows[0].id}`);
                 reply.status(200).send(`{"mensagem": "Usuário encontrado e atualizado"}`);
@@ -54,6 +53,21 @@ async function rotaUsuarios(fastify, options) {
             }
         }catch (err) {
             throw new Error("Usuário inexistente");
+        }
+    });
+
+    fastify.patch('/usuarios/atualizaStatus/:id', async (request, reply) =>{
+        try{
+            console.log(request.params);
+            const response = await pool.query(`SELECT * FROM users where id=${request.params.id}`);
+            if(response.rows.length){
+                await pool.query(`UPDATE usuarios SET status='INATIVO' where id=${response.rows[0].id}`);
+                reply.status(200).send(`{"mensagem": "Usuário encontrado e atualizado"}`);
+            }else{
+                reply.status(404).send(`{"mensagem": "Usuário inexistente"}`);
+            }
+        }catch (err) {
+            throw new Error(err);
         }
     });
 
