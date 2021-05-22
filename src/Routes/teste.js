@@ -6,7 +6,6 @@ async function routes(fastify, options) {
         try {
             const response = await pool.query('SELECT * FROM users');
             reply.status(200).send(response.rows)
-            await pool.end();
         } catch (err) {
             throw new Error(err)
         }
