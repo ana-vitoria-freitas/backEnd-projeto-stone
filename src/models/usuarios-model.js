@@ -1,6 +1,6 @@
 class UsuariosModel {
-    constructor(name, email, senha, telefone, status) {
-        this.name = name;
+    constructor(nome, email, senha, telefone, status) {
+        this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.telefone = telefone;
