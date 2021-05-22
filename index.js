@@ -24,9 +24,6 @@ app.get('/', async(req, res) => {
 
 app.get('/ana', (req, res) =>{
     try{
-
-        const pool = new Pool(proConfig);
-
         res.send("Rota ana configurada!");
     }catch(Exception){
         res.send(Exception);
