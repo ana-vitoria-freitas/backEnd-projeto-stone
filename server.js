@@ -1,10 +1,13 @@
 const fastify = require('fastify')({ logger: true })
 
 /*Importando as rotas de outros arquivos*/
-const route = require('./src/Routes/teste');
+const rotaInicial = require('./src/Routes/teste');
+const rotaUsuarios = require('./src/Routes/usuarios');
+
 
 /*Registrando as rotas importadas de outras pastas e arquivos*/
-fastify.register(route)
+fastify.register(rotaInicial);
+fastify.register(rotaUsuarios);
 
 async function start() {
     try {
