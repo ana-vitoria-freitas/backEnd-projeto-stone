@@ -6,8 +6,7 @@ fastify.register(require('fastify-cors'), {
   origin: "*"
 });
 
-fastify.register(require('./src/middleware/authMiddleware'));
-fastify.register(require('./src/Routes/auth'));
+fastify.register(require('./src/Middleware/authMiddleware'));
 
 
 /*Importando as rotas de outros arquivos*/
@@ -23,8 +22,6 @@ fastify.register(rotaUsuarios);
 fastify.register(rotaClientes);
 fastify.register(rotaVendas);
 fastify.register(rotaProdutos);
-
-
 
 
 async function start() {
