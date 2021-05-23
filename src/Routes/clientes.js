@@ -89,7 +89,7 @@ async function rotaClientes(fastify, options) {
                     cliente.setSiglaEstado(data.uf);
                 })
                 .catch((error) => {
-                    reply.status(400).send(`{"mensagem": "Bad request"}`);
+                    reply.status(400).send(`{"mensagem": "Bad request!"}`);
                     console.log(error);
                 })
                 const response = await pool.query(`UPDATE clientes SET logradouro='${cliente.logradouro}', numero_rua='${cliente.numero_rua}',complemento='${cliente.complemento}', bairro='${cliente.bairro}', cidade='${cliente.cidade}', sigla_estado='${cliente.siglaEstado}', cep='${cliente.cep}' ` +
