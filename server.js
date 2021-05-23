@@ -1,4 +1,14 @@
 const fastify = require('fastify')({ logger: true })
+fastify.register(require('fastify-jwt'), {
+  secret: process.env.JWT_SECRET
+})
+fastify.register(require('fastify-cors'), {
+  origin: "*"
+});
+
+fastify.register(require('./src/middleware/authMiddleware'));
+fastify.register(require('./src/Routes/auth'));
+
 
 /*Importando as rotas de outros arquivos*/
 const rotaInicial = require('./src/Routes/teste');
@@ -7,13 +17,15 @@ const rotaClientes = require('./src//Routes/clientes');
 const rotaVendas = require('./src/Routes/vendas');
 const rotaProdutos = require('./src/Routes/produtos');
 
-
 /*Registrando as rotas importadas de outras pastas e arquivos*/
 fastify.register(rotaInicial);
 fastify.register(rotaUsuarios);
 fastify.register(rotaClientes);
 fastify.register(rotaVendas);
 fastify.register(rotaProdutos);
+
+
+
 
 async function start() {
     try {

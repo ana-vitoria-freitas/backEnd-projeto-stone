@@ -4,7 +4,7 @@ const pool = new Pool(proConfig);
 const UsuarioModel = require('../Models/usuarios-model');
 const bcrypt = require('bcrypt');
 async function rotaUsuarios(fastify, options) {
-    fastify.get('/usuarios', async (request, reply) => {
+    fastify.get('/usuarios', {preValidation: [fastify.autenticacao]} ,async (request, reply) => {
         try {
             const response = await pool.query('SELECT * FROM usuarios');
             reply.status(200).send(response.rows)
@@ -27,10 +27,12 @@ async function rotaUsuarios(fastify, options) {
         try {
             const response = await pool.query(`SELECT * FROM usuarios where email='${request.body.email}'`);
             if(response.rows.length){
+                const {email, senha} = request.body;
                 if (bcrypt.compareSync(request.body.senha, response.rows[0].senha)){
-                    reply.status(200).send(`{"mensagem": "Usuário com credenciais válidas"}`);
+                    const token = fastify.jwt.sign({email, senha}, {expiresIn: 60});
+                    reply.status(200).send({"mensagem": "Usuário com credenciais válidas", token: token});
                 }else{
-                    reply.status(404).send(`{"mensagem": "Senha inválida"}`)
+                    reply.status(401).send({mensagem: "Credenciais inválidas"})
                 }
             }else{
                 reply.status(404).send(`{"mensagem": "Usuário não encontrado"}`);
@@ -40,7 +42,7 @@ async function rotaUsuarios(fastify, options) {
         }
     })
 
-    fastify.patch('/usuarios/atualizaTelefone/:id', async (request, reply) =>{
+    fastify.patch('/usuarios/atualizaTelefone/:id',async (request, reply) =>{
         try{
             const response = await pool.query(`SELECT * FROM usuarios where id=${request.params.id}`);
             if(response.rows.length){
