@@ -1,6 +1,6 @@
 const fastify = require('fastify')({ logger: true })
 fastify.register(require('fastify-jwt'), {
-  secret: process.env.JWT_SECRET
+  secret: "test@#$%$"
 })
 fastify.register(require('fastify-cors'), {
   origin: "*"
