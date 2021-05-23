@@ -44,7 +44,7 @@ async function rotaUsuarios(fastify, options) {
 
     fastify.patch('/usuarios/atualizaTelefone/:id', async (request, reply) =>{
         try{
-            const response = await pool.query(`SELECT * FROM users where id=${request.params.id}`);
+            const response = await pool.query(`SELECT * FROM usuarios where id=${request.params.id}`);
             if(response.rows.length){
                 await pool.query(`UPDATE usuarios SET telefone=${request.body.telefone} where id=${response.rows[0].id}`);
                 reply.status(200).send(`{"mensagem": "Usuário encontrado e atualizado"}`);
@@ -53,6 +53,24 @@ async function rotaUsuarios(fastify, options) {
             }
         }catch (err) {
             throw new Error("Usuário inexistente");
+        }
+    });
+
+    fastify.patch('/usuarios/atualizaSenha/:id', async (request, reply) =>{
+        try {
+            const response = await pool.query(`SELECT * FROM usuarios where id=${request.params.id}`);
+            if(response.rows.length){
+                if (request.body.senha == request.body.digiteNovamente){
+                    await pool.query(`UPDATE usuarios SET senha='${bcrypt.hashSync(request.body.senha, 10)}' WHERE id=${request.params.id}`);
+                    reply.status(200).send(`{"mensagem": "Senha atualizada com sucesso"}`);
+                }else{
+                    reply.status(404).send(`{"mensagem": "As senhas não são iguais"}`)
+                }
+            }else{
+                reply.status(404).send(`{"mensagem": "Usuário não encontrado"}`);
+            }
+        }catch (err) {
+            throw new Error(err);
         }
     });
 
@@ -70,6 +88,9 @@ async function rotaUsuarios(fastify, options) {
             throw new Error(err);
         }
     });
+
+
+
 
 }
 module.exports = rotaUsuarios;
