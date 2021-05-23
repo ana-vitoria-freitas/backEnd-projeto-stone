@@ -16,7 +16,7 @@ async function rotaClientes(fastify, options) {
     });
 
     fastify.post('/clientes/insereCliente', async(request, reply) => {
-        const cliente = new ClienteModel(request.body.nome, request.body.email, request.body.senha, request.body.telefone, request.body.cep, request.body.numero_rua, request.body.complemento);
+        const cliente = new ClienteModel(request.body.nome, request.body.cpf, request.body.email, request.body.senha, request.body.telefone, request.body.cep, request.body.numero_rua, request.body.complemento);
         try {
             await fetch(`https://viacep.com.br/ws/${cliente.cep}/json/`)
                 .then((response) => response.json())
@@ -32,8 +32,8 @@ async function rotaClientes(fastify, options) {
                     console.log(error);
                 })
 
-            const response = await pool.query(`INSERT INTO clientes (nome, email, senha, telefone, logradouro, numero_rua,complemento, bairro, cidade, sigla_estado, cep, status) ` +
-            `values ('${cliente.nome}', '${cliente.email}', '${bcrypt.hashSync(cliente.senha, 10)}', '${cliente.telefone}', '${cliente.logradouro}', '${cliente.numero_rua}', '${cliente.complemento}', '${cliente.bairro}', '${cliente.cidade}', '${cliente.siglaEstado}', '${cliente.cep}', 'ATIVO')`);
+            const response = await pool.query(`INSERT INTO clientes (nome, cpf, email, senha, telefone, logradouro, numero_rua,complemento, bairro, cidade, sigla_estado, cep, status) ` +
+            `values ('${cliente.nome}', '${cliente.cpf}', '${cliente.email}', '${bcrypt.hashSync(cliente.senha, 10)}', '${cliente.telefone}', '${cliente.logradouro}', '${cliente.numero_rua}', '${cliente.complemento}', '${cliente.bairro}', '${cliente.cidade}', '${cliente.siglaEstado}', '${cliente.cep}', 'ATIVO')`);
             reply.status(200).send(`{"mensagem": "Cliente inserido com sucesso"}`);
         } catch (err) {
             throw new Error(err);
@@ -96,6 +96,21 @@ async function rotaClientes(fastify, options) {
                 `WHERE id=${request.params.id}`);
                 reply.status(200).send(`{"mensagem": "Endereço atualizado com sucesso"}`);
 
+            }
+        }catch (err) {
+            throw new Error(err);
+        }
+    });
+
+    fastify.patch('/clientes/atualizaStatus/:id', async (request, reply) =>{
+        try{
+            console.log(request.params);
+            const response = await pool.query(`SELECT * FROM clientes where id=${request.params.id}`);
+            if(response.rows.length){
+                await pool.query(`UPDATE usuarios SET status='INATIVO' where id=${response.rows[0].id}`);
+                reply.status(200).send(`{"mensagem": "Cliente encontrado e com status inativo"}`);
+            }else{
+                reply.status(404).send(`{"mensagem": "Cliente inexistente"}`);
             }
         }catch (err) {
             throw new Error(err);
