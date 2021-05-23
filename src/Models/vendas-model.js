@@ -1,14 +1,66 @@
 class VendasModel {
-    constructor(id_produto, data_criacao, preco, quantidade, frete, id_cliente, id_usuario, status) {
-        this.id_produto = id_produto;
-        this.data_criacao = data_criacao;
-        this.preco = preco;
-        this.quantidade = quantidade;
-        this.frete = frete;
-        this.id_cliente = id_cliente;
-        this.id_usuario = id_usuario;
-        this.status = status;
+
+    setIdProduto(idProduto){
+        this.id_produto = idProduto;
     }
+
+    setDataCriacao(dataCriacao){
+        this.data_criacao = dataCriacao;
+    }
+
+    setPreco(preco){
+        this.preco = preco;
+    }
+
+    setQuantidade(quantidade){
+        this.quantidade = quantidade;
+    }
+
+
+    setFrete(frete){
+        this.frete = frete;
+    }
+
+    setIdCliente(idCliente){
+        this.id_cliente = idCliente;
+    }
+
+    setIdUsuario(idUsuario){
+        this.id_usuario = idUsuario;
+    }
+
+    getIdProduto(){
+        return this.id_produto;
+    }
+
+    getDataCriacao(){
+        return this.data_criacao;
+    }
+
+    getPreco(){
+        return this.preco;
+    }
+
+    getQuantidade(){
+        return this.quantidade;
+    }
+
+    getFrete(){
+        return this.frete;
+    }
+
+    getIdCliente(){
+        return this.id_cliente;
+    }
+
+    getIdUsuario(){
+        return this.id_usuario;
+    }
+
+
+
+
+
 }
 
 module.exports = VendasModel;

@@ -1,5 +1,5 @@
 class ProdutoModel{
-    constructor(titulo, link_img, descricao, preco_un, quantidade, categoria, id_usuario, status){
+    constructor(titulo, link_img, descricao, preco_un, quantidade, categoria, id_usuario){
         this.titulo = titulo;
         this.link_img = link_img;
         this.descricao = descricao;
@@ -7,7 +7,6 @@ class ProdutoModel{
         this.quantidade = quantidade;
         this.categoria = categoria;
         this.id_usuario = id_usuario;
-        this.status = status;
     }
 }
 
