@@ -5,6 +5,15 @@ fastify.register(require('fastify-jwt'), {
 fastify.register(require('fastify-cors'), {
   origin: "*"
 });
+fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
+  try {
+    var json = JSON.parse(body)
+    done(null, json)
+  } catch (err) {
+    err.statusCode = 400
+    done(err, undefined)
+  }
+})
 
 fastify.register(require('./src/Middleware/authMiddleware'));
 
