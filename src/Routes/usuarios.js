@@ -25,10 +25,10 @@ async function rotaUsuarios(fastify, options) {
 
     fastify.post('/usuarios/verificaUsuario', async (request, reply) =>{
         try {
-            const response = await pool.query(`SELECT * FROM usuarios where email='${request.body.email}'`);
+            const response = await pool.query(`SELECT * FROM usuarios where email='${request.body.email_usuario}'`);
             if(response.rows.length){
                 //const {email, senha} = request.body;
-                if (bcrypt.compareSync(request.body.senha, response.rows[0].senha)){
+                if (bcrypt.compareSync(request.body.senha_usuario, response.rows[0].senha)){
                     //const token = fastify.jwt.sign({email, senha}, {expiresIn: 3600});
                     reply.status(200).send({"mensagem": "Usuário com credenciais válidas"}/*, token: token}*/);
                 }else{
