@@ -20,6 +20,7 @@
     "fastify-jwt": "^2.5.0",
     "fastify-plugin": "^3.0.0",
     "fastify-swagger": "^4.7.0",
+    "install": "^0.13.0",
     "node-fetch": "^2.6.1",
     "pg": "^8.6.0"
   },

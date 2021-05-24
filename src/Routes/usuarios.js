@@ -3,8 +3,9 @@ const Pool = require("pg").Pool;
 const pool = new Pool(proConfig);
 const UsuarioModel = require('../Models/usuarios-model');
 const bcrypt = require('bcrypt');
+const swagger = require('fastify-swagger');
 async function rotaUsuarios(fastify, options) {
-    fastify.get('/usuarios', /*{preValidation: [fastify.autenticacao]} ,*/async (request, reply) => {
+    fastify.get('/usuarios',{preValidation: [fastify.autenticacao]} ,async (request, reply) => {
         try {
             const response = await pool.query('SELECT * FROM usuarios');
             reply.status(200).send(response.rows)
@@ -27,10 +28,11 @@ async function rotaUsuarios(fastify, options) {
         try {
             const response = await pool.query(`SELECT * FROM usuarios where email='${request.body.email_usuario}'`);
             if(response.rows.length){
-                //const {email, senha} = request.body;
+                const {email_usuario, senha_usuario} = request.body;
                 if (bcrypt.compareSync(request.body.senha_usuario, response.rows[0].senha)){
-                    //const token = fastify.jwt.sign({email, senha}, {expiresIn: 3600});
-                    reply.status(200).send({"mensagem": "Usuário com credenciais válidas"}/*, token: token}*/);
+                    const token = fastify.jwt.sign({email_usuario, senha_usuario}, {expiresIn: 3600});
+                    reply.header('Authorization', `Bearer ${token}`);
+                    reply.status(200).send({"mensagem": "Usuário com credenciais válidas", token: token});
                 }else{
                     reply.status(401).send({mensagem: "Credenciais inválidas"})
                 }
