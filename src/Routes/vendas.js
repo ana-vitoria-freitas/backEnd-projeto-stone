@@ -5,7 +5,7 @@ const VendaModel = require('../Models/vendas-model');
 
 
 async function rotaVendas(fastify, options) {
-    fastify.get('/vendas', async(request, reply) =>{
+    fastify.get('/vendas', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         try{
             const response = await pool.query('SELECT * FROM vendas');
             reply.status(200).send(response.rows);
@@ -15,7 +15,7 @@ async function rotaVendas(fastify, options) {
     });
 
 
-    fastify.post('/vendas/insereVenda/:idProduto/:idUsuario', async(request, reply) =>{
+    fastify.post('/vendas/:idProduto/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         const venda = new VendaModel();
         try{
             const response = await pool.query(`SELECT * FROM produtos WHERE id=${request.params.idProduto}`);
@@ -41,9 +41,9 @@ async function rotaVendas(fastify, options) {
         }
     });
 
-    fastify.get('/vendas/vendasClientes', async (request, reply) =>{
+    fastify.get('/vendas/:idUsuario', async (request, reply) =>{
         try{
-            const response = await pool.query('SELECT cli.id as id_cliente, cli.nome as nome_cliente, vend.preco as preco_venda FROM vendas vend INNER JOIN clientes cli ON cli.id=vend.id_cliente');
+            const response = await pool.query(`SELECT cli.id as id_cliente, cli.nome as nome_cliente, vend.preco as preco_venda FROM vendas vend INNER JOIN clientes cli ON cli.id=vend.id_cliente INNER JOIN produtos prod ON prod.id=vend.id_produto WHERE vend.id_usuario=${request.params.idUsuario}`);
             reply.status(200).send(response.rows);
         }catch (err){
             throw new Error(err);

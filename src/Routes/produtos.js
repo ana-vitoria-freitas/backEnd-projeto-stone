@@ -5,7 +5,7 @@ const ProdutoModel = require('../Models/produtos-model');
 
 
 async function rotaProdutos(fastify, options) {
-    fastify.get('/produtos', async(request, reply) =>{
+    fastify.get('/produtos', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         try{
             const response = await pool.query('SELECT * FROM produtos WHERE quantidade=0');
             for(let i = 0; i < response.rows.length; i++){
@@ -18,25 +18,25 @@ async function rotaProdutos(fastify, options) {
         }
     });
 
-    fastify.get('/produtos/maiorPreco', async(request, reply) =>{
+    fastify.get('/produtos/maiorPreco/:idUsuario', {preValidation: [fastify.autenticacao]}, async(request, reply) =>{
         try{
-            const response = await pool.query(`SELECT id as id_produto, titulo as titulo_produto, preco_un as preco_produto FROM produtos ORDER BY preco_un DESC`);
+            const response = await pool.query(`SELECT id as id_produto, titulo as titulo_produto, preco_un as preco_produto FROM produtos ORDER BY preco_un DESC WHERE id_usuario=${request.params.idUsuario}`);
             reply.status(200).send(response.rows);
         }catch(err){
             throw new Error(err);
         }
     });
 
-    fastify.get('/produtos/menorPreco', async(request, reply) =>{
+    fastify.get('/produtos/menorPreco/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         try{
-            const response = await pool.query(`SELECT id as id_produto, titulo as titulo_produto, preco_un as preco_produto FROM produtos ORDER BY preco_un ASC`);
+            const response = await pool.query(`SELECT id as id_produto, titulo as titulo_produto, preco_un as preco_produto FROM produtos ORDER BY preco_un ASC WHERE id_usuario=${request.params.idUsuario}`);
             reply.status(200).send(response.rows);
         }catch(err){
             throw new Error(err);
         }
     });
 
-    fastify.post('/produtos/insereProduto', async(request, reply) =>{
+    fastify.post('/produtos', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         const produto = new ProdutoModel(request.body.titulo, request.body.link_img, request.body.descricao, request.body.preco_un, request.body.quantidade, request.body.categoria, request.body.id_usuario);
         try{
             const response = await pool.query(`INSERT INTO produtos (titulo, link_img, descricao, preco_un, quantidade, categoria, id_usuario, status) values ('${produto.titulo}', '${produto.link_img}', '${produto.descricao}', '${produto.preco_un}', '${produto.quantidade}', '${produto.categoria}', '${produto.id_usuario}', 'EM ESTOQUE')`);
@@ -46,36 +46,36 @@ async function rotaProdutos(fastify, options) {
         }
     });
 
-    fastify.patch('/produtos/inativaProduto/:idProduto', async(request, reply) =>{
+    fastify.patch('/produtos/status/:id/:status', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         try{
-            const response = await pool.query(`UPDATE produtos SET status='INATIVO' WHERE id=${request.params.idProduto}`);
+            const response = await pool.query(`UPDATE produtos SET status='${request.params.status}' WHERE id=${request.params.id}`);
             reply.status(200).send(`{"mensagem": "Produto desativado"}`);
         }catch (err) {
             throw new Error(err);
         }
     });
 
-    fastify.patch('/produtos/atualizaImagem/:idProduto', async(request, reply) =>{
+    fastify.patch('/produtos/link_img/:id/:link_img', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         try{
-            const response = await pool.query(`UPDATE produtos SET link_img='${request.body.novo_link_img} WHERE id=${request.params.idProduto}'`);
+            const response = await pool.query(`UPDATE produtos SET link_img='${request.params.link_img} WHERE id=${request.params.id}'`);
             reply.status(200).send(`{"mensagem": "Foto atualizada com sucesso"}`);
         }catch (err){
             throw new Error(err);
         }
     });
 
-    fastify.patch('/produtos/atualizaPreco/:idProduto', async(request, reply) =>{
+    fastify.patch('/produtos/preco_un/:id/:preco_un', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         try{
-            const response = await pool.query(`UPDATE produtos SET preco_un=${request.body.novo_preco_un} WHERE id=${request.params.idProduto}`);
+            const response = await pool.query(`UPDATE produtos SET preco_un=${request.params.preco_un} WHERE id=${request.params.id}`);
             reply.status(200).send(`{"mensagem": "Preço atualizado com sucesso"}`);
         }catch (err){
             throw new Error(err);
         }
     });
 
-    fastify.patch('/produtos/atualizaQuantidade/:idProduto', async(request, reply) =>{
+    fastify.patch('/produtos/quantidade/:id/:quantidade', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         try{
-            const response = await pool.query(`UPDATE produtos SET quantidade=${request.body.nova_quantidade} WHERE id=${request.params.idProduto}`);
+            const response = await pool.query(`UPDATE produtos SET quantidade=${request.params.quantidade} WHERE id=${request.params.id}`);
             reply.status(200).send(`{"mensagem": "Preço atualizado com sucesso"}`);
         }catch (err){
             throw new Error(err);

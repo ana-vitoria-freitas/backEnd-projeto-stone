@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const fetch = require('node-fetch');
 
 async function rotaClientes(fastify, options) {
-    fastify.get('/clientes', async(request, reply) => {
+    fastify.get('/clientes', {preValidation: [fastify.autenticacao]}, async(request, reply) => {
         try {
             const response = await pool.query('SELECT * FROM clientes');
             reply.status(200).send(response.rows);
@@ -15,7 +15,7 @@ async function rotaClientes(fastify, options) {
         }
     });
 
-    fastify.post('/clientes/insereCliente', async(request, reply) => {
+    fastify.post('/clientes', async(request, reply) => {
         const cliente = new ClienteModel(request.body.nome, request.body.cpf, request.body.email, request.body.senha, request.body.telefone, request.body.cep, request.body.numero_rua, request.body.complemento);
         try {
             await fetch(`https://viacep.com.br/ws/${cliente.cep}/json/`)
@@ -40,11 +40,13 @@ async function rotaClientes(fastify, options) {
         }
     });
 
-    fastify.post('/clientes/verificaCliente', async (request, reply) =>{
+    fastify.post('/clientes/:email', {preValidation: [fastify.autenticacao]},async (request, reply) =>{
         try {
-            const response = await pool.query(`SELECT * FROM clientes where email='${request.body.email}'`);
+            const response = await pool.query(`SELECT * FROM clientes where email='${request.params.email}'`);
             if(response.rows.length){
                 if (bcrypt.compareSync(request.body.senha, response.rows[0].senha)){
+                    const token = fastify.jwt.sign({email, password}, {expiresIn: 3600});
+                    reply.header('Authorization', `Bearer ${token}`);
                     reply.status(200).send(`{"mensagem": "Usuário com credenciais válidas"}`);
                 }else{
                     reply.status(404).send(`{"mensagem": "Senha inválida"}`)
@@ -57,7 +59,7 @@ async function rotaClientes(fastify, options) {
         }
     })
 
-    fastify.patch('/clientes/atualizaSenha/:id', async (request, reply) =>{
+    fastify.patch('/clientes/:id',{preValidation: [fastify.autenticacao]},async (request, reply) =>{
         try {
             const response = await pool.query(`SELECT * FROM clientes where id=${request.params.id}`);
             if(response.rows.length){
@@ -75,12 +77,12 @@ async function rotaClientes(fastify, options) {
         }
     });
 
-    fastify.patch('/clientes/atualizaCep/:id', async(request, reply) => {
-        const cliente = new ClienteModel(undefined, undefined, undefined, undefined, request.body.cep, request.body.numero_rua, request.body.complemento);
+    fastify.patch('/clientes/cep/:id/:cep', {preValidation: [fastify.autenticacao]},async(request, reply) => {
+        const cliente = new ClienteModel(undefined, undefined, undefined, undefined, request.params.cep, request.body.numero_rua, request.body.complemento);
         try{
             const response = await pool.query(`SELECT * FROM clientes where id=${request.params.id}`);
             if(response.rows.length){
-                await fetch(`https://viacep.com.br/ws/${request.body.cep}/json/`)
+                await fetch(`https://viacep.com.br/ws/${cliente.cep}/json/`)
                 .then((response) => response.json())
                 .then((data) => {
                     cliente.setLogradouro(data.logradouro);
@@ -102,12 +104,12 @@ async function rotaClientes(fastify, options) {
         }
     });
 
-    fastify.patch('/clientes/atualizaStatus/:id', async (request, reply) =>{
+    fastify.patch('/clientes/status/:id/:status', {preValidation: [fastify.autenticacao]},async (request, reply) =>{
         try{
             console.log(request.params);
             const response = await pool.query(`SELECT * FROM clientes where id=${request.params.id}`);
             if(response.rows.length){
-                await pool.query(`UPDATE usuarios SET status='INATIVO' where id=${response.rows[0].id}`);
+                await pool.query(`UPDATE usuarios SET status='${request.params.status}' where id=${response.rows[0].id}`);
                 reply.status(200).send(`{"mensagem": "Cliente encontrado e com status inativo"}`);
             }else{
                 reply.status(404).send(`{"mensagem": "Cliente inexistente"}`);
