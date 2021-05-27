@@ -5,6 +5,15 @@ const ProdutoModel = require('../Models/produtos-model');
 
 
 async function rotaProdutos(fastify, options) {
+
+    fastify.get('/produtos/:idUsuario', async(request, reply) =>{
+        try{
+            const response = await pool.query(`SELECT COUNT(id_usuario) FROM produtos WHERE id_usuario=${request.params.idUsuario}`);
+            reply.status(200).send(response.rows);
+        }catch (err){
+            throw new Error(err);
+        }
+    })
     fastify.get('/produtos/:idUsuario/:pagina/:produto_pagina', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         try{
             const response = await pool.query('SELECT * FROM produtos WHERE quantidade=0');
