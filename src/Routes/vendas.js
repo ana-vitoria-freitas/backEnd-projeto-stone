@@ -17,6 +17,7 @@ async function rotaVendas(fastify, options) {
 
     fastify.post('/vendas/:idProduto/:idUsuario', async(request, reply) =>{
         const venda = new VendaModel();
+        const d = new Date();
         try{
             const response = await pool.query(`SELECT * FROM produtos WHERE id=${request.params.idProduto}`);
             if(response.rows[0].quantidade >= request.body.quantidade){
@@ -30,7 +31,7 @@ async function rotaVendas(fastify, options) {
                     venda.setFrete(40.00);
                 }
                 pool.query(`INSERT INTO vendas (id_produto, data_criacao, preco, quantidade, frete, id_cliente,id_usuario, status)`+
-                ` values (${request.params.idProduto},'${new Date()}' ,${request.body.quantidade * response.rows[0].preco_un}, ${request.body.quantidade}, ${venda.getFrete()}, ${request.body.id_cliente}, ${request.params.idUsuario}, 'PENDENTE')`);
+                ` values (${request.params.idProduto},'now()' ,${request.body.quantidade * response.rows[0].preco_un}, ${request.body.quantidade}, ${venda.getFrete()}, ${request.body.id_cliente}, ${request.params.idUsuario}, 'PENDENTE')`);
                 reply.status(200).send(`{"mensagem": "Venda inserida com sucesso"}`);
             }else {
                 reply.status(400).send(`{"mensagem": "Operação inválida. Produto sem estoque"}`)
