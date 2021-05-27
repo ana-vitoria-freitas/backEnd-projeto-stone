@@ -91,6 +91,15 @@ async function rotaProdutos(fastify, options) {
         }
     });
 
+    fastify.delete('/produtos/:idProduto', async(request, reply) =>{
+        try{
+            await pool.query(`DELET FROM produtos WHERE id=${request.params.id}`);
+            reply.status(200).send('{"mensagem": "Produto deletado com sucesso"}');
+        }catch(err){
+            throw new Error(err);
+        }
+    })
+
 
 }
 
