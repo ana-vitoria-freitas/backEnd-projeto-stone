@@ -32,7 +32,7 @@ async function rotaUsuarios(fastify, options) {
                 const email = request.params.email;
                 if (bcrypt.compareSync(request.body.password, response.rows[0].senha)){
                     const token = fastify.jwt.sign({email, password}, {expiresIn: 3600});
-                    //reply.header('Authorization', `Bearer ${token}`);
+                    reply.header('Authorization', `Bearer ${token}`);
                     reply.status(200).send({"mensagem": "Usuário com credenciais válidas", token: token});
                 }else{
                     reply.status(401).send({mensagem: "Credenciais inválidas"})
