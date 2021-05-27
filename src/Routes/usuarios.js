@@ -5,7 +5,7 @@ const UsuarioModel = require('../Models/usuarios-model');
 const bcrypt = require('bcrypt');
 const swagger = require('fastify-swagger');
 async function rotaUsuarios(fastify, options) {
-    fastify.get('/usuarios',{preValidation: [fastify.autenticacao]} ,async (request, reply) => {
+    fastify.get('/usuarios',async (request, reply) => {
         try {
             const response = await pool.query('SELECT * FROM usuarios');
             reply.status(200).send(response.rows)
@@ -30,7 +30,7 @@ async function rotaUsuarios(fastify, options) {
             if(response.rows.length){
                 const {password} = request.body;
                 const email = request.params.email;
-                if (bcrypt.compareSync(request.body.password, response.rows[0].password)){
+                if (bcrypt.compareSync(request.body.password, response.rows[0].senha)){
                     const token = fastify.jwt.sign({email, password}, {expiresIn: 3600});
                     //reply.header('Authorization', `Bearer ${token}`);
                     reply.status(200).send({"mensagem": "Usuário com credenciais válidas", token: token});
