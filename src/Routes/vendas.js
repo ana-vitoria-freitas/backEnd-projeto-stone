@@ -15,7 +15,7 @@ async function rotaVendas(fastify, options) {
     });
 
 
-    fastify.post('/vendas/:idProduto/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
+    fastify.post('/vendas/:idProduto/:idUsuario', async(request, reply) =>{
         const venda = new VendaModel();
         try{
             const response = await pool.query(`SELECT * FROM produtos WHERE id=${request.params.idProduto}`);
