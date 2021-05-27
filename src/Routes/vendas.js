@@ -41,9 +41,9 @@ async function rotaVendas(fastify, options) {
         }
     });
 
-    fastify.get('/vendas/:idUsuario', {preValidation: [fastify.autenticacao]},async (request, reply) =>{
+    fastify.get('/vendas/:idUsuario/:pagina/:vendas_pagina',async (request, reply) =>{
         try{
-            const response = await pool.query(`SELECT cli.id as id_cliente, cli.nome as nome_cliente, vend.preco as preco_venda FROM vendas vend INNER JOIN clientes cli ON cli.id=vend.id_cliente INNER JOIN produtos prod ON prod.id=vend.id_produto WHERE vend.id_usuario=${request.params.idUsuario}`);
+            const response = await pool.query(`SELECT cli.id as id_cliente, cli.nome as nome_cliente, vend.preco as preco_venda, vend.frete as frete, prod.link_img as foto_produto FROM vendas vend INNER JOIN clientes cli ON cli.id=vend.id_cliente INNER JOIN produtos prod ON prod.id=vend.id_produto WHERE vend.id_usuario=${request.params.idUsuario} LIMIT ${request.params.vendas_pagina} OFFSET ${(request.params.pagina - 1) * request.params.vendas_pagina}`);
             reply.status(200).send(response.rows);
         }catch (err){
             throw new Error(err);
