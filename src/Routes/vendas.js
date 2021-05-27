@@ -5,7 +5,7 @@ const VendaModel = require('../Models/vendas-model');
 
 
 async function rotaVendas(fastify, options) {
-    fastify.get('/vendas', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
+    fastify.get('/vendas',async(request, reply) =>{
         try{
             const response = await pool.query('SELECT * FROM vendas');
             reply.status(200).send(response.rows);
