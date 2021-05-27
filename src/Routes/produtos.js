@@ -14,7 +14,7 @@ async function rotaProdutos(fastify, options) {
             throw new Error(err);
         }
     })
-    fastify.get('/produtos/:idUsuario/:pagina/:produto_pagina', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
+    fastify.get('/produtos/:idUsuario/:pagina/:produto_pagina',async(request, reply) =>{
         try{
             const response = await pool.query('SELECT * FROM produtos WHERE quantidade=0');
             for(let i = 0; i < response.rows.length; i++){
