@@ -91,10 +91,15 @@ async function rotaProdutos(fastify, options) {
         }
     });
 
-    fastify.delete('/produtos/:idProduto', async(request, reply) =>{
+    fastify.delete('/produtos/:idProduto/:idUsuario', async(request, reply) =>{
         try{
-            await pool.query(`DELET FROM produtos WHERE id=${request.params.id}`);
-            reply.status(200).send('{"mensagem": "Produto deletado com sucesso"}');
+            const encontraProduto = await pool.query(`SELECT * FROM produtos WHERE id=${request.params.idProduto} AND id_usuario=${request.params.idUsuario}`);
+            if(encontraProduto.rows.length){
+                await pool.query(`DELETE FROM produtos WHERE id=${request.params.idProduto}`);
+                reply.status(200).send(`{"mensagem": "Produto deletado devidamente"}`);
+            }else{
+                reply.status(404).send(`{"mensagem": "Produto inexistente"}`);
+            }
         }catch(err){
             throw new Error(err);
         }
