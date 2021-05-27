@@ -98,7 +98,7 @@ async function rotaProdutos(fastify, options) {
                 await pool.query(`DELETE FROM produtos WHERE id=${request.params.idProduto}`);
                 reply.status(200).send(`{"mensagem": "Produto deletado devidamente"}`);
             }else{
-                reply.status(404).send(`{"mensagem": "Produto inexistente"}`);
+                reply.status(200).send(`{"mensagem": "Produto inexistente"}`);
             }
         }catch(err){
             throw new Error(err);
