@@ -5,13 +5,13 @@ const ProdutoModel = require('../Models/produtos-model');
 
 
 async function rotaProdutos(fastify, options) {
-    fastify.get('/produtos', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
+    fastify.get('/produtos/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         try{
             const response = await pool.query('SELECT * FROM produtos WHERE quantidade=0');
             for(let i = 0; i < response.rows.length; i++){
                 await pool.query(`UPDATE produtos SET status='SEM ESTOQUE' WHERE id=${response.rows[i].id}`);
             }
-            const res = await pool.query(`SELECT * FROM produtos`);
+            const res = await pool.query(`SELECT * FROM produtos WHERE id_usuario=${request.params.idUsuario}`);
             reply.status(200).send(res.rows);
         }catch (err){
             throw new Error(err);
