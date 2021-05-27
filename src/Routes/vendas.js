@@ -41,7 +41,7 @@ async function rotaVendas(fastify, options) {
         }
     });
 
-    fastify.get('/vendas/:idUsuario', async (request, reply) =>{
+    fastify.get('/vendas/:idUsuario', {preValidation: [fastify.autenticacao]},async (request, reply) =>{
         try{
             const response = await pool.query(`SELECT cli.id as id_cliente, cli.nome as nome_cliente, vend.preco as preco_venda FROM vendas vend INNER JOIN clientes cli ON cli.id=vend.id_cliente INNER JOIN produtos prod ON prod.id=vend.id_produto WHERE vend.id_usuario=${request.params.idUsuario}`);
             reply.status(200).send(response.rows);
