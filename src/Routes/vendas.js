@@ -30,7 +30,7 @@ async function rotaVendas(fastify, options) {
                     venda.setFrete(40.00);
                 }
                 pool.query(`INSERT INTO vendas (id_produto, data_criacao, preco, quantidade, frete, id_cliente,id_usuario, status)`+
-                ` values (${response.rows[0].id},'${new Date()}' ,${request.body.quantidade * response.rows[0].preco_un}, ${request.body.quantidade}, ${venda.getFrete()}, ${request.body.id_cliente}, ${request.params.idUsuario}, 'PENDENTE')`);
+                ` values (${request.params.idProduto},'${new Date()}' ,${request.body.quantidade * response.rows[0].preco_un}, ${request.body.quantidade}, ${venda.getFrete()}, ${request.body.id_cliente}, ${request.params.idUsuario}, 'PENDENTE')`);
                 reply.status(200).send(`{"mensagem": "Venda inserida com sucesso"}`);
             }else {
                 reply.status(400).send(`{"mensagem": "Operação inválida. Produto sem estoque"}`)
