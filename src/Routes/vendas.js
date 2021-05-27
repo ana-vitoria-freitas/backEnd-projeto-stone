@@ -5,9 +5,9 @@ const VendaModel = require('../Models/vendas-model');
 
 
 async function rotaVendas(fastify, options) {
-    fastify.get('/vendas',async(request, reply) =>{
+    fastify.get('/vendas/:idUsuario',async(request, reply) =>{
         try{
-            const response = await pool.query('SELECT * FROM vendas');
+            const response = await pool.query(`SELECT COUNT(id_usuario) FROM vendas WHERE id_usuario=${request.params.idUsuario}`);
             reply.status(200).send(response.rows);
         }catch (err){
             throw new Error(err);
