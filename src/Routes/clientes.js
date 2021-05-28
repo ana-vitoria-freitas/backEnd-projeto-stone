@@ -15,7 +15,7 @@ async function rotaClientes(fastify, options) {
         }
     });
 
-    fastify.post('/clientes', async(request, reply) => {
+    fastify.post('/clientes', {preValidation: [fastify.autenticacao]},async(request, reply) => {
         const cliente = new ClienteModel(request.body.nome, request.body.cpf, request.body.email, request.body.senha, request.body.telefone, request.body.cep, request.body.numero_rua, request.body.complemento);
         try {
             await fetch(`https://viacep.com.br/ws/${cliente.cep}/json/`)

@@ -5,7 +5,7 @@ const UsuarioModel = require('../Models/usuarios-model');
 const bcrypt = require('bcrypt');
 const swagger = require('fastify-swagger');
 async function rotaUsuarios(fastify, options) {
-    fastify.get('/usuarios',async (request, reply) => {
+    fastify.get('/usuarios', {preValidation: [fastify.autenticacao]},async (request, reply) => {
         try {
             const response = await pool.query('SELECT * FROM usuarios');
             reply.status(200).send(response.rows)
@@ -14,7 +14,7 @@ async function rotaUsuarios(fastify, options) {
         }
     });
 
-    fastify.post('/usuarios', async (request, reply) =>{
+    fastify.post('/usuarios', {preValidation: [fastify.autenticacao]},async (request, reply) =>{
         const usuario = new UsuarioModel(request.body.nome, request.body.cpf, request.body.email, request.body.senha, request.body.telefone);
         try {
             await pool.query(`INSERT INTO usuarios (nome, cpf, email, senha, telefone, status) values ('${usuario.nome}','${usuario.cpf}' ,'${usuario.email}', '${bcrypt.hashSync(usuario.senha, 10)}', '${usuario.telefone}', 'ATIVO')`);

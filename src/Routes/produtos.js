@@ -6,7 +6,7 @@ const ProdutoModel = require('../Models/produtos-model');
 
 async function rotaProdutos(fastify, options) {
 
-    fastify.get('/produtos/:idUsuario', async(request, reply) =>{
+    fastify.get('/produtos/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         try{
             const response = await pool.query(`SELECT COUNT(id_usuario) FROM produtos WHERE id_usuario=${request.params.idUsuario}`);
             reply.status(200).send(response.rows);
@@ -45,8 +45,8 @@ async function rotaProdutos(fastify, options) {
         }
     });
 
-    fastify.post('/produtos', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
-        const produto = new ProdutoModel(request.body.titulo, request.body.link_img, request.body.descricao, request.body.preco_un, request.body.quantidade, request.body.categoria, request.body.id_usuario);
+    fastify.post('/produtos/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
+        const produto = new ProdutoModel(request.body.titulo, request.body.link_img, request.body.descricao, request.body.preco_un, request.body.quantidade, request.body.categoria, request.params.idUsuario);
         try{
             const response = await pool.query(`INSERT INTO produtos (titulo, link_img, descricao, preco_un, quantidade, categoria, id_usuario, status) values ('${produto.titulo}', '${produto.link_img}', '${produto.descricao}', '${produto.preco_un}', '${produto.quantidade}', '${produto.categoria}', '${produto.id_usuario}', 'EM ESTOQUE')`);
             reply.status(200).send(`{"mensagem": "Produto inserido com sucesso!"}`);
@@ -91,7 +91,7 @@ async function rotaProdutos(fastify, options) {
         }
     });
 
-    fastify.delete('/produtos/:idProduto/:idUsuario', async(request, reply) =>{
+    fastify.delete('/produtos/:idProduto/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) =>{
         try{
             const encontraProduto = await pool.query(`SELECT * FROM produtos WHERE id=${request.params.idProduto} AND id_usuario=${request.params.idUsuario}`);
             if(encontraProduto.rows.length){
