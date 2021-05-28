@@ -2,7 +2,7 @@
 <br>
 O projeto da mentoria Stone da Turma Resilia + Stone consiste na criação de uma aplicação para uma loja delivery. 
 <br><br>
-## Requisitos para a aplicação:
+## Requisitos para a aplicação:<br>
 
 - Criar, remover, atualizar e listar produtos; <br>
 - Gerenciar vendas - ou seja, poder criar e cancelar vendas; <br>
