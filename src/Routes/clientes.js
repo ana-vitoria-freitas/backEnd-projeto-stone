@@ -15,8 +15,8 @@ async function rotaClientes(fastify, options) {
         }
     });
 
-    fastify.post('/clientes', {preValidation: [fastify.autenticacao]},async(request, reply) => {
-        const cliente = new ClienteModel(request.body.nome, request.body.cpf, request.body.email, request.body.senha, request.body.telefone, request.body.cep, request.body.numero_rua, request.body.complemento);
+    fastify.post('/clientes/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) => {
+        const cliente = new ClienteModel(request.body.nome, request.body.cpf, request.body.email, request.body.senha, request.body.telefone, request.body.cep, request.body.numero_rua, request.body.complemento, request.params.idUsuario);
         try {
             await fetch(`https://viacep.com.br/ws/${cliente.cep}/json/`)
                 .then((response) => response.json())
@@ -32,8 +32,8 @@ async function rotaClientes(fastify, options) {
                     console.log(error);
                 })
 
-            const response = await pool.query(`INSERT INTO clientes (nome, cpf, email, senha, telefone, logradouro, numero_rua,complemento, bairro, cidade, sigla_estado, cep, status) ` +
-            `values ('${cliente.nome}', '${cliente.cpf}', '${cliente.email}', '${bcrypt.hashSync(cliente.senha, 10)}', '${cliente.telefone}', '${cliente.logradouro}', '${cliente.numero_rua}', '${cliente.complemento}', '${cliente.bairro}', '${cliente.cidade}', '${cliente.siglaEstado}', '${cliente.cep}', 'ATIVO')`);
+            const response = await pool.query(`INSERT INTO clientes (nome, cpf, email, senha, telefone, logradouro, numero_rua,complemento, bairro, cidade, sigla_estado, cep, status, foto_perfil, id_usuario) ` +
+            `values ('${cliente.nome}', '${cliente.cpf}', '${cliente.email}', '${bcrypt.hashSync(cliente.senha, 10)}', '${cliente.telefone}', '${cliente.logradouro}', '${cliente.numero_rua}', '${cliente.complemento}', '${cliente.bairro}', '${cliente.cidade}', '${cliente.siglaEstado}', '${cliente.cep}', 'ATIVO', '${cliente.foto_perfil}', ${cliente.id_usuario})`);
             reply.status(200).send(`{"mensagem": "Cliente inserido com sucesso"}`);
         } catch (err) {
             throw new Error(err);

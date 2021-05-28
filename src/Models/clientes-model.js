@@ -1,6 +1,6 @@
 class ClientesModel {
 
-    constructor(nome, cpf, email, senha, telefone, cep, numero_rua,complemento) {
+    constructor(nome, cpf, email, senha, telefone, cep, numero_rua,complemento, foto_perfil,id_usuario) {
         this.nome = nome;
         this.email = email;
         this.cpf = cpf;
@@ -9,6 +9,8 @@ class ClientesModel {
         this.cep = cep;
         this.numero_rua = numero_rua;
         this.complemento = complemento;
+        this.foto_perfil= foto_perfil;
+        this.id_usuario = id_usuario;
     }
     setLogradouro(logradouro){
         this.logradouro = logradouro;
