@@ -6,9 +6,9 @@ const bcrypt = require('bcrypt');
 const fetch = require('node-fetch');
 
 async function rotaClientes(fastify, options) {
-    fastify.get('/clientes', {preValidation: [fastify.autenticacao]}, async(request, reply) => {
+    fastify.get('/clientes/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) => {
         try {
-            const response = await pool.query('SELECT * FROM clientes');
+            const response = await pool.query(`SELECT * FROM clientes where id_usuario=${request.params.idUsuario}`);
             reply.status(200).send(response.rows);
         } catch (err) {
             throw new Error(err);
