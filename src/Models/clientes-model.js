@@ -1,10 +1,7 @@
 class ClientesModel {
 
-    constructor(nome, cpf, email, senha, telefone, cep, numero_rua,complemento, foto_perfil,id_usuario) {
+    constructor(nome, telefone, cep, numero_rua,complemento, foto_perfil,id_usuario) {
         this.nome = nome;
-        this.email = email;
-        this.cpf = cpf;
-        this.senha = senha;
         this.telefone = telefone;
         this.cep = cep;
         this.numero_rua = numero_rua;

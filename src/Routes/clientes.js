@@ -18,7 +18,7 @@ async function rotaClientes(fastify, options) {
     fastify.post('/clientes/porUsuario/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) => {
         const cliente = new ClienteModel(request.body.nome, request.body.telefone, request.body.cep, request.body.numero_rua, request.body.complemento, request.body.foto_perfil,request.params.idUsuario);
         try {
-            await fetch(`https://viacep.com.br/ws/${cliente.cep}/json/`)
+            await fetch(`https://viacep.com.br/ws/${parseInt(request.body.cep)}/json/`)
                 .then((response) => response.json())
                 .then((data) => {
                     cliente.setLogradouro(data.logradouro);
@@ -32,7 +32,7 @@ async function rotaClientes(fastify, options) {
                     console.log(error);
                 })
 
-            const response = await pool.query(`INSERT INTO clientes (nome, telefone, logradouro, numero_rua,complemento, bairro, cidade, sigla_estado, cep, status, foto_perfil, id_usuario) ` +
+            const response = await pool.query(`INSERT INTO clientes (nome, telefone, logradouro, numero_rua,complemento, bairro, cidade, estado, cep, status, foto_perfil, id_usuario) ` +
             `values ('${cliente.nome}',  '${cliente.telefone}', '${cliente.logradouro}', '${cliente.numero_rua}', '${cliente.complemento}', '${cliente.bairro}', '${cliente.cidade}', '${cliente.siglaEstado}', '${cliente.cep}', 'ATIVO', '${cliente.foto_perfil}', ${cliente.id_usuario})`);
             reply.status(200).send(`{"mensagem": "Cliente inserido com sucesso"}`);
         } catch (err) {
