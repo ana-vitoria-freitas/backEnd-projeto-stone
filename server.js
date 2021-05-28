@@ -3,7 +3,7 @@ fastify.register(require('fastify-jwt'), {
   secret: "test@#$%$"
 })
 fastify.register(require('fastify-cors'), {
-  origin: "*"
+  origin: true
 });
 const Swagger = require('./swaggerOptions');
 fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
