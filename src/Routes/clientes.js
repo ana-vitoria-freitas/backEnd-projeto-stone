@@ -15,6 +15,15 @@ async function rotaClientes(fastify, options) {
         }
     });
 
+    fastify.get('/clientes/quantidade/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) => {
+        try {
+            const response = await pool.query(`SELECT COUNT(id_usuario) FROM clientes where id_usuario=${request.params.idUsuario}`);
+            reply.status(200).send(response.rows);
+        } catch (err) {
+            throw new Error(err);
+        }
+    });
+
     fastify.post('/clientes/porUsuario/:idUsuario', {preValidation: [fastify.autenticacao]},async(request, reply) => {
         const cliente = new ClienteModel(request.body.nome, request.body.telefone, request.body.cep, request.body.numero_rua, request.body.complemento, request.body.foto_perfil,request.params.idUsuario);
         try {
